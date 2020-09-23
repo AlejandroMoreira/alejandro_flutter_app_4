@@ -1,4 +1,3 @@
-import 'package:alejandroflutterapp4/screens/products_details_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProductItemWidget extends StatelessWidget {
