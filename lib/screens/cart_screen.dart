@@ -1,3 +1,4 @@
+import 'package:alejandroflutterapp4/providers/orders.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +46,13 @@ class CartScreen extends StatelessWidget {
                   Spacer(),
                   FlatButton(
                     child: Text("ORDER NOW"),
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false).addOrder(
+                        cartData.items.values.toList(),
+                        cartData.totalAmount,
+                      );
+                      cartData.clear();
+                    },
                     textColor: Theme.of(context).primaryColor,
                   ),
                 ],
@@ -59,11 +66,11 @@ class CartScreen extends StatelessWidget {
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return CartItemWidget(
-                  id: cartData.items.values.toList()[index].id,
-                  quantity: cartData.items.values.toList()[index].quantity,
-                  price: cartData.items.values.toList()[index].price,
-                  title: cartData.items.values.toList()[index].title,
-                  removeId: cartData.items.keys.toList()[index]);
+                    id: cartData.items.values.toList()[index].id,
+                    quantity: cartData.items.values.toList()[index].quantity,
+                    price: cartData.items.values.toList()[index].price,
+                    title: cartData.items.values.toList()[index].title,
+                    removeId: cartData.items.keys.toList()[index]);
               },
               itemCount: cartData.items.length,
             ),
