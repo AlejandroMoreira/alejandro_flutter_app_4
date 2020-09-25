@@ -1,8 +1,8 @@
-import 'package:alejandroflutterapp4/providers/products.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
+import '../providers/products.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = "/edit-product";
@@ -80,7 +80,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _keyForm.currentState.validate();
     if (!isValid) return;
 
@@ -93,18 +93,31 @@ class _EditProductScreenState extends State<EditProductScreen> {
       Provider.of<Products>(context, listen: false)
           .updateProduct(_product.id, _product);
     } else {
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_product)
-          .then((_) {
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .addProduct(_product);
+      } catch (error) {
+        await showDialog<Null>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text("An error occurred!"),
+                  content: Text("Something went wrong"),
+                  actions: [
+                    FlatButton(
+                      child: Text("Well :p"),
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                  ],
+                ));
+      } finally {
         setState(() {
           _isLoading = false;
         });
         Navigator.of(context).pop();
-      });
+      }
     }
-    // print(
-    //     "title: ${_product.title}\ndescription: ${_product.description}\nprice: ${_product.price}\nurl: ${_product.imageUrl}\n");
-    // Navigator.of(context).pop();
   }
 
   @override

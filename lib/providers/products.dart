@@ -68,30 +68,37 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> addProduct(Product product) {
-    const url = "https://alejandro-app-flutter-4.firebaseio.com/products.json";
+  Future<void> fetchedAndSetProducts() async{
+    const url = "https://alejandro-app-flutter-4.firebaseio.com/products";
 
-    return http
-        .post(
-      url,
-      body: json.encode({
-        "title": product.title,
-        "description": product.description,
-        "imageUrl": product.imageUrl,
-        "price": product.price,
-        "isFavorite": product.isFavorite,
-      }),
-    ).then((value) {
+  }
+
+  Future<void> addProduct(Product product) async {
+    const url = "https://alejandro-app-flutter-4.firebaseio.com/products.json";
+    try {
+      final respone = await http.post(
+        url,
+        body: json.encode({
+          "title": product.title,
+          "description": product.description,
+          "imageUrl": product.imageUrl,
+          "price": product.price,
+          "isFavorite": product.isFavorite,
+        }),
+      );
       final newProduct = Product(
         price: product.price,
         imageUrl: product.imageUrl,
         title: product.title,
         description: product.description,
-        id: json.decode(value.body)["name"],
+        id: json.decode(respone.body)["name"],
       );
       _items.add(newProduct);
       notifyListeners();
-    });
+
+    } catch (error) {
+      throw error;
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
