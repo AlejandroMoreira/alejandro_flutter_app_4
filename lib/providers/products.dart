@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import './product.dart';
+import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -65,17 +68,30 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void addProduct(Product product) {
-    // _items.add(value);
-    final newProduct = Product(
-      price: product.price,
-      imageUrl: product.imageUrl,
-      title: product.title,
-      description: product.description,
-      id: DateTime.now().toString(),
-    );
-    _items.add(newProduct);
-    notifyListeners();
+  Future<void> addProduct(Product product) {
+    const url = "https://alejandro-app-flutter-4.firebaseio.com/products.json";
+
+    return http
+        .post(
+      url,
+      body: json.encode({
+        "title": product.title,
+        "description": product.description,
+        "imageUrl": product.imageUrl,
+        "price": product.price,
+        "isFavorite": product.isFavorite,
+      }),
+    ).then((value) {
+      final newProduct = Product(
+        price: product.price,
+        imageUrl: product.imageUrl,
+        title: product.title,
+        description: product.description,
+        id: json.decode(value.body)["name"],
+      );
+      _items.add(newProduct);
+      notifyListeners();
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
@@ -86,7 +102,7 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id){
+  void deleteProduct(String id) {
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
   }
