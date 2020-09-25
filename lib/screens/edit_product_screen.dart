@@ -76,6 +76,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImage() {
     if (!_imageFocusNode.hasFocus) {
+      if ((!_imageUrlController.text.startsWith('http') &&
+              !_imageUrlController.text.startsWith('https')) ||
+          (!_imageUrlController.text.endsWith('.png') &&
+              !_imageUrlController.text.endsWith('.jpg') &&
+              !_imageUrlController.text.endsWith('.jpeg') &&
+              !_imageUrlController.text.endsWith('.gif'))) {
+        return;
+      }
       setState(() {});
     }
   }
@@ -84,13 +92,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final isValid = _keyForm.currentState.validate();
     if (!isValid) return;
 
+    _keyForm.currentState.save();
     setState(() {
       _isLoading = true;
     });
 
-    _keyForm.currentState.save();
     if (_product.id != null) {
-      Provider.of<Products>(context, listen: false)
+      await Provider.of<Products>(context, listen: false)
           .updateProduct(_product.id, _product);
     } else {
       try {
@@ -111,13 +119,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                   ],
                 ));
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
+      // finally {
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      //   Navigator.of(context).pop();
+      // }
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   @override

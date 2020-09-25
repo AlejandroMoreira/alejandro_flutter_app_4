@@ -30,18 +30,18 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   void didChangeDependencies() {
-    // if (_isInit) {
-    //   setState(() {
-    //     _isLoading = true;
-    //   });
-    //   Provider.of<Products>(context).fetchedAndSetProducts().then((value) {
-    //     setState(() {
-    //       _isLoading = false;
-    //     });
-    //   });
-    // }
-    //
-    // _isInit = false;
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).fetchedAndSetProducts().then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+
+    _isInit = false;
     super.didChangeDependencies();
   }
 
