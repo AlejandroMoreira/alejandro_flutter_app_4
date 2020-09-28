@@ -1,4 +1,5 @@
 import 'package:alejandroflutterapp4/providers/products.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,8 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
+
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -24,14 +27,25 @@ class UserProductItem extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: (){
-                Navigator.of(context).pushNamed(EditProductScreen.routeName,arguments: id);
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed(EditProductScreen.routeName, arguments: id);
               },
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: (){
-                Provider.of<Products>(context,listen: false).deleteProduct(id);
+              onPressed: () async {
+                try {
+                  Provider.of<Products>(context, listen: false)
+                      .deleteProduct(id);
+                } catch (ex) {
+                  scaffold.showSnackBar(SnackBar(
+                    content: Text(
+                      "Deleting failed!",
+                      textAlign: TextAlign.center,
+                    ),
+                  ));
+                }
               },
               color: Theme.of(context).errorColor,
             ),

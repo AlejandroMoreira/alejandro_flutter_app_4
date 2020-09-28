@@ -5,7 +5,7 @@ import '../widgets/app_drawer.dart';
 import '../widgets/order_item_widget.dart';
 import '../providers/orders.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatelessWidget{
   static const routeName = "/orders";
 
   @override

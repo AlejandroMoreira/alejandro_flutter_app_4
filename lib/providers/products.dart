@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:alejandroflutterapp4/modules/http_exception.dart';
 import 'package:flutter/material.dart';
 
 import './product.dart';
@@ -19,7 +20,7 @@ class Products with ChangeNotifier {
     //   id: 'p2',
     //   title: 'Trousers',
     //   description: 'A nice pair of trousers.',
-    //   price: 59.99,
+    //   price: 59.e99,
     //   imageUrl:
     //       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
     // ),
@@ -139,8 +140,23 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((element) => element.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url =
+        "https://alejandro-app-flutter-4.firebaseio.com/products/$id.json";
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    var existingProduct = _items[existingProductIndex];
+
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException("Could not delete product");
+    }
+    existingProduct = null;
   }
 }
