@@ -26,10 +26,32 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  Future<void> fetchAndSetOrders() async{
-    final url =
-        "https://alejandro-app-flutter-4.firebaseio.com/products/orders.json";
+  Future<void> fetchAndSetOrders() async {
+    const url = "https://alejandro-app-flutter-4.firebaseio.com/orders.json";
     final response = await http.get(url);
+    print(json.decode(response.body));
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+    if (extractedData == null) return;
+
+    extractedData.forEach((key, value) {
+      loadedOrders.add(OrderItem(
+        id: key,
+        amount: value["amount"],
+        products: (value["products"] as List<dynamic>)
+            .map((e) => CartItem(
+                  id: e["id"],
+                  price: e["price"],
+                  title: e["title"],
+                  quantity: e["quantity"],
+                ))
+            .toList(),
+        dateTime: DateTime.parse(value["dateTime"]),
+      ));
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
